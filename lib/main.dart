@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'calced_item.dart';
 
 void main() {
@@ -28,22 +29,33 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class _MyHomePageScope extends InheritedWidget {
+  const _MyHomePageScope({
+    Key? key,
+    required Widget child,
+    required _MyHomePageState state,
+  })  : _state = state,
+        super(key: key, child: child);
+
+  final _MyHomePageState _state;
+
+  @override
+  bool updateShouldNotify(_MyHomePageScope old) => _state != old._state;
+}
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
+
+  static _MyHomePageState? of(BuildContext context) {
+    final _MyHomePageScope? scope =
+        context.dependOnInheritedWidgetOfExactType<_MyHomePageScope>();
+    return scope?._state;
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -53,53 +65,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      items.add(ShowItem("add a thing"));
+      items.add(ShowItem());
     });
-  }
-
-
-  Widget _buildRow(ShowItem pair) {
-    return new ShowItemWidget();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: ListView. builder(
-          padding: const EdgeInsets.all(16.0),
-          // 对于每个建议的单词对都会调用一次itemBuilder，然后将单词对添加到ListTile行中
-          // 在偶数行，该函数会为单词对添加一个ListTile row.
-          // 在奇数行，该函数会添加一个分割线widget，来分隔相邻的词对。
-          // 注意，在小屏幕上，分割线看起来可能比较吃力。
-          itemCount: items.length,
-          itemBuilder: (context, i) {
-            final index = i;
-            // if (index < items.length) {
-            //   return new Divider();
-            // }
-            return _buildRow(items[index]);
-          }
-        )
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+    return _MyHomePageScope(
+        state: this,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: Center(
+              child: ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    return Dismissible(
+                      // Each Dismissible must contain a Key. Keys allow Flutter to
+                      // uniquely identify widgets.
+                      key: Key(items[index].hashCode.toString()),
+                      // Provide a function that tells the app
+                      // what to do after an item has been swiped away.
+                      onDismissed: (direction) {
+                        // Remove the item from the data source.
+                        setState(() {
+                          items.removeAt(index);
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('${items[index].name} dismissed')));
+                      },
+                      child: new ShowItemWidget(id: index),
+                    );
+                  })),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _incrementCounter,
+            tooltip: 'Increment',
+            child: Icon(Icons.add),
+          ), // This trailing comma makes auto-formatting nicer for build methods.
+        ));
   }
 }
