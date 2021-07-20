@@ -16,4 +16,12 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 ### plan
-day 1: prepare flutter development env and create flutter project.
+- day 1: prepare flutter development env and create flutter project.
+- day 2: prepare a model class for text in name and amount.
+- day 3: 
+    1. get text input to state using `InheritedWidget`
+---
+todo: 
+    1. select an type when add an item, such as income or outcome.
+    2. split two types into each table
+    3. calc each table summary
