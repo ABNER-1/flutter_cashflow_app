@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
-
 import 'calced_item.dart';
+import 'models/money_items.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:flutter/widgets.dart';
+import 'db.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
+}
+
+// Define a function that inserts dogs into the database
+Future<void> insertShowItem(ShowItem item) async {
+  final db = await DBProvider().db;
+
+  await db.insert(
+    'show_item',
+    item.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+
+// A method that retrieves all the dogs from the dogs table.
+Future<List<ShowItem>> showItems() async {
+  // Get a reference to the database.
+  final db = await DBProvider().db;
+
+  final List<Map<String, dynamic>> maps = await db.query('show_item');
+
+  return List.generate(maps.length, (i) {
+    return ShowItem.fromJson(maps[i]);
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -50,10 +77,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final items = <ShowItem>[];
+  var items = <ShowItem>[];
   var incomeItems = new Map<String, ShowItem>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
+  @override
+  void initState(){
+    super.initState();
+    initItems();
+  }
+
+  void initItems() async{
+    items = await showItems();
+  }
   void _incrementCounter() {
     setState(() {
       items.add(ShowItem());
@@ -67,19 +103,34 @@ class _MyHomePageState extends State<MyHomePage> {
         itemCount: items.length + 1,
         itemBuilder: (context, index) {
           if (index >= items.length) {
-            return new Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Processing Data')));
-                    // if (_formKey.currentState!.validate()) {
-                    //   ScaffoldMessenger.of(context)
-                    //       .showSnackBar(SnackBar(content: Text('Processing Data')));
-                    // }
-                  },
-                  child: Text('Submit'),
-                ));
+            if (items.length > 0)
+              return new Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Processing Data')));
+                      // if (_formKey.currentState!.validate()) {
+                      //   ScaffoldMessenger.of(context)
+                      //       .showSnackBar(SnackBar(content: Text('Processing Data')));
+                      // }
+                      for (var i = 0; i < items.length; ++i) {
+                        if (items[i].id != 0) {
+                          //todo: use update
+                          insertShowItem(items[i]);
+                        } else {
+                          insertShowItem(items[i]);
+                        }
+                      }
+                    },
+                    child: Text('Submit'),
+                  ));
+            else {
+              return new Padding(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+                child: Text('Add first item to enjoy cash flow'),
+              );
+            }
           }
           return Dismissible(
             // Each Dismissible must contain a Key. Keys allow Flutter to

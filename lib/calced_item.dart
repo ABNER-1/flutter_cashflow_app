@@ -1,20 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-
-enum CalcedType {
-  Unknown,
-  Income,
-  Outcome,
-}
-
-class ShowItem {
-  String name;
-  double money;
-  CalcedType type;
-
-  ShowItem(
-      {this.name = "default", this.money = 0.0, this.type = CalcedType.Income});
-}
+import 'models/money_items.dart';
 
 class ShowItemWidget extends StatefulWidget {
   final int id;
@@ -49,13 +35,18 @@ class _ShowItemWidgetState extends State<ShowItemWidget> {
           children: <Widget>[
             new Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                child: Text(MyHomePage.of(context)?.items[id].type == CalcedType.Income ? "收入": "支出"),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                child: Text(
+                    MyHomePage.of(context)?.items[id].type == CalcedType.Income
+                        ? "收入"
+                        : "支出"),
               ),
             ),
             new Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 child: new TextFormField(
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
@@ -69,7 +60,8 @@ class _ShowItemWidgetState extends State<ShowItemWidget> {
             ),
             new Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 child: TextFormField(
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
