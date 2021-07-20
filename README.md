@@ -25,3 +25,4 @@ todo:
     1. select an type when add an item, such as income or outcome.
     2. split two types into each table
     3. calc each table summary
+    

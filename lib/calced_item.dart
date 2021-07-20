@@ -44,12 +44,18 @@ class _ShowItemWidgetState extends State<ShowItemWidget> {
   Widget build(BuildContext context) {
     // Fill this out in the next step.
     return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
         child: Row(
           children: <Widget>[
             new Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                child: Text(MyHomePage.of(context)?.items[id].type == CalcedType.Income ? "收入": "支出"),
+              ),
+            ),
+            new Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 child: new TextFormField(
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
@@ -63,7 +69,7 @@ class _ShowItemWidgetState extends State<ShowItemWidget> {
             ),
             new Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 child: TextFormField(
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
