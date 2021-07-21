@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter/widgets.dart';
+import 'models/money_items.dart';
 
+
+const moneyItemTableName = "money_item";
 
 class DBProvider {
   static final DBProvider _singleton = DBProvider._internal();
@@ -12,34 +14,73 @@ class DBProvider {
     return _singleton;
   }
 
-  DBProvider._internal(){
-    initDB();
-  }
+  DBProvider._internal();
 
-  static late Database _db;
+  static Database? _db;
 
-  Future<Database> get db async {
-    return _db;
-  }
-
-  void initDB() async {
-    _db = await _initDB();
-  }
+  Future<Database> get db async => _db ??= await _initDB();
 
   Future<Database> _initDB() async {
     WidgetsFlutterBinding.ensureInitialized();
-    final database = openDatabase(
-        join(await getDatabasesPath(), 'doggie_database.db'),
-        onCreate: _onCreate);
-    return await database;
+    final database = await openDatabase(
+        join(await getDatabasesPath(), 'cash_flow_database.db'),
+        onCreate: _onCreate,
+        version: 1);
+    return database;
   }
 
   Future _onCreate(Database db, int version) async {
     // Run the CREATE TABLE statement on the database.
     return db.execute(
-      'CREATE TABLE show_item(id INTEGER PRIMARY KEY, name TEXT, money REAL, type INTEGER)',
+      'CREATE TABLE $moneyItemTableName (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, money REAL, type INTEGER)',
     );
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {}
+}
+
+// Define a function that inserts dogs into the database
+Future<void> insertShowItem(MoneyItem item) async {
+  final db = await DBProvider().db;
+
+  final id = await db.insert(
+    moneyItemTableName,
+    item.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+  item.id = id;
+  print("insert model: " + id.toString());
+}
+
+Future<List<MoneyItem>> listShowItems() async {
+  // Get a reference to the database.
+  final db = await DBProvider().db;
+
+  final List<Map<String, dynamic>> maps = await db.query(moneyItemTableName);
+
+  return List.generate(maps.length, (i) {
+    return MoneyItem.fromJson(maps[i]);
+  });
+}
+
+Future<void> deleteShowItem(int id) async {
+  final db = await DBProvider().db;
+
+  await db.delete(
+    moneyItemTableName,
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+  print("delete item: " + id.toString());
+}
+
+Future<void> updateShowItem(MoneyItem item) async {
+  final db = await DBProvider().db;
+
+  await db.update(
+    moneyItemTableName,
+    item.toMap(),
+    where: 'id = ?',
+    whereArgs: [item.id],
+  );
 }

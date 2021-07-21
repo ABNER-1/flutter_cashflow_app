@@ -20,6 +20,8 @@ samples, guidance on mobile development, and a full API reference.
 - day 2: prepare a model class for text in name and amount.
 - day 3: 
     1. get text input to state using `InheritedWidget`
+- day 4:
+    debug sqlite class to save model data.
 ---
 todo: 
     1. select an type when add an item, such as income or outcome.

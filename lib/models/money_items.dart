@@ -4,13 +4,13 @@ enum CalcedType {
   Outcome,
 }
 
-class ShowItem {
+class MoneyItem {
   int id;
   String name;
   double money;
   CalcedType type;
 
-  ShowItem(
+  MoneyItem(
       {this.id = 0,
       this.name = "default",
       this.money = 0.0,
@@ -24,14 +24,14 @@ class ShowItem {
       typeId = 2;
     }
     return {
-      'id': id,
+      'id': id == 0 ? null : id,
       'name': name,
       'money': money,
       'type': typeId,
     };
   }
 
-  factory ShowItem.fromJson(Map<String, dynamic> parsedJson) {
+  factory MoneyItem.fromJson(Map<String, dynamic> parsedJson) {
     var type = CalcedType.Unknown;
     var typeId = parsedJson['type'];
     if (typeId == 1) {
@@ -39,7 +39,7 @@ class ShowItem {
     } else if (typeId == 2) {
       type = CalcedType.Outcome;
     }
-    return ShowItem(
+    return MoneyItem(
       id: parsedJson['id'],
       name: parsedJson['name'],
       money: parsedJson['money'],
