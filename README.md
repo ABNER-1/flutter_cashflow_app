@@ -22,9 +22,10 @@ samples, guidance on mobile development, and a full API reference.
     1. get text input to state using `InheritedWidget`
 - day 4:
     debug sqlite class to save model data.
+- day 5:
+    1. select an type when add an item, such as income or outcome.
 ---
 todo: 
-    1. select an type when add an item, such as income or outcome.
     2. split two types into each table
     3. calc each table summary
     
